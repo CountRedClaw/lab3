@@ -1,0 +1,73 @@
+@font-face{
+
+    font-family: 'VerlagBlack';
+
+    src: url('../fonts/VerlagBlack.otf');
+
+    font-weight: normal;
+
+    font-style: normal;
+}
+
+* {
+    font-family: VerlagBlack;
+    color: #37453c;
+}
+
+body {
+    /*width: 600px;
+    margin-left: auto;
+    margin-right: auto;*/
+    background-color: #e6c461;
+    color: #37453c;
+}
+
+.container {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+ul {
+    margin: 5px 20px 5px 0px;
+}
+
+h1 {
+    font-size: 50px;
+    margin-bottom: -10px;
+}
+
+h2 {
+    font-size: 20px;
+    display: inline-block;
+    padding: 0 15px;
+    position: relative;
+}
+
+h2:before,
+h2:after {
+    background: #37453c;
+    content: "";
+    display: block;
+    height: 3px;
+    position: absolute;
+    top: 40%;
+    width: 20px;
+}
+h2:before {
+    right: 95%;
+}
+h2:after {
+    left: 95%;
+}
+
+li {
+    font-size: 15px;
+}
+
+li a {
+    margin-left: 10px;
+}

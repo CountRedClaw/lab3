@@ -5,6 +5,9 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
 
+  <welcome-file-list>
+    <welcome-file>index</welcome-file>
+  </welcome-file-list>
   <!--<resource-ref>
     <res-ref-name>jdbc/db_lab3</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>
