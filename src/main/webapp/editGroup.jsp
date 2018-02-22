@@ -13,13 +13,9 @@
             <h3>ENTER THE NAME <br> OF NEW GROUP</h3>
 
                 <form action="editGroup" method="post">
-                    <input value="${group.name}" type="text" name="group" placeholder="NAME"></input>
+                    <input value="${group.name}" type="text" name="group" placeholder="NAME">
                     <button type="submit">REGISTER</button>
                 </form>
         </div>
-
-<%--        <select name="group_user">
-            <option disabled>Выберите группу</option>
-        </select>--%>
     </body>
 </html>

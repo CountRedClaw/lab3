@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <%--<h1>The List Of Groups Of Students</h1>--%>
     <div class="container">
         <h1>THE LIST</h1>
         <h2>OF GROUPS</h2>
@@ -35,11 +34,6 @@
                     <ul type="none">
                         <c:forEach var="student" items="${group.studentList}">
                             <li>
-                                <%--<a href="UserController?action=edit&userId=<c:out value="${user.userid}"/>">--%>
-                                <%--<a href="editStudent?id=${student.id}">
-                                        ${student.name}
-                                        ${student.surname}
-                                </a>--%>
                                 <a href="editStudent?id=${student.id}">${student.name} ${student.surname}</a>
                                 <a href="deleteStudent?id=${student.id}"><i class="fa fa-minus-circle" aria-hidden="true"></i></a>
                             </li>

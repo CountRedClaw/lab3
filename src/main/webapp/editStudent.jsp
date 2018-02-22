@@ -11,23 +11,23 @@
     <body>
         <div id="feedback-form" class="container">
             <h3 class="header">ENTER THE NAME OF NEW STUDENT</h3>
-                <form action="editStudent" method="post">
-                    <input value="${student.name}" type="text" name="name" placeholder="NAME">
-                    <input value="${student.surname}" type="text" name="surname" placeholder="SURNAME">
+            <form action="editStudent" method="post">
+                <input value="${student.name}" type="text" name="name" placeholder="NAME">
+                <input value="${student.surname}" type="text" name="surname" placeholder="SURNAME">
 
-                    <select name="st_group">
-                        <option disabled>Выберите группу</option>
-                        <c:forEach var="group" items="${groups}">
-                            <c:if test = "${student.id == group.id}">
-                                <option selected value="${group.id}">${group.name}</option>
-                            </c:if>
-                            <c:if test = "${student.id != group.id}">
-                                <option value="${group.id}">${group.name}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>
-                    <button type="submit">REGISTER</button>
-                </form>
+                <select name="st_group">
+                    <option disabled>CHOOSE THE OPTION</option>
+                    <c:forEach var="group" items="${groups}">
+                        <c:if test = "${student.group != group.id}">
+                            <option value="${group.id}">${group.name}</option>
+                        </c:if>
+                        <c:if test = "${student.group == group.id}">
+                            <option selected value="${group.id}">${group.name}</option>
+                        </c:if>
+                    </c:forEach>
+                </select>
+                <button type="submit">REGISTER</button>
+            </form>
         </div>
     </body>
 </html>

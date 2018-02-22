@@ -15,8 +15,6 @@ import java.util.logging.Logger;
 public class Connect {
 
     private static Connection conn;
-    private static InitialContext ic;
-    private static DataSource ds;
 
     public Connect() {
         getConnection();
@@ -24,8 +22,8 @@ public class Connect {
 
     public Connection getConnection() {
         try {
-            ic = new InitialContext();
-            ds = (DataSource) ic.lookup("java:/MySqlDS1");
+            InitialContext ic = new InitialContext();
+            DataSource ds = (DataSource) ic.lookup("java:/MySqlDS1");
             conn = ds.getConnection();
         } catch (SQLException | NamingException ex) {
             Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
@@ -40,14 +38,14 @@ public class Connect {
             ResultSet resultSet;
 
             if (groupName == null || groupName.equals("")) {
-                statement = conn.prepareStatement("SELECT s.st_id, s.st_name, s.st_surname, s.st_group, g.gr_id, g.gr_name " +
+                statement = conn.prepareStatement("SELECT g.gr_id, g.gr_name, s.st_id, s.st_name, s.st_surname, s.st_group " +
                         "FROM groups g " +
                         "LEFT JOIN students s ON (s.st_group = g.gr_id) " +
                         "ORDER BY g.gr_id"
                 );
                 resultSet = statement.executeQuery();
             } else {
-                statement = conn.prepareStatement("SELECT s.st_id, s.st_name, s.st_surname, s.st_group, g.gr_id, g.gr_name " +
+                statement = conn.prepareStatement("SELECT g.gr_id, g.gr_name, s.st_id, s.st_name, s.st_surname, s.st_group " +
                         "FROM groups g " +
                         "LEFT JOIN students s ON (s.st_group = g.gr_id) " +
                         "WHERE g.gr_name = (?) " +
@@ -90,14 +88,14 @@ public class Connect {
         Group group = new Group();
         PreparedStatement statement;
         try {
-            statement = conn.prepareStatement("SELECT s.st_id, s.st_name, s.st_surname, s.st_group, g.gr_id, g.gr_name " +
+            statement = conn.prepareStatement("SELECT g.gr_id, g.gr_name, s.st_id, s.st_name, s.st_surname, s.st_group " +
                                                     "FROM groups g " +
                                                     "LEFT JOIN students s ON (s.st_group = g.gr_id) " +
                                                     "WHERE g.gr_id = (?)");
             statement.setString(1, String.valueOf(groupId));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {                                                          // Берём записи из селекта по очереди
-                if (resultSet.isFirst()) {                               //
+                if (resultSet.isFirst()) {
                     ArrayList<Student> list = new ArrayList<>();
                     list.add(new Student(resultSet.getInt("st_id"),
                             resultSet.getString("st_name"),
@@ -107,7 +105,7 @@ public class Connect {
                     group.setId(resultSet.getInt("gr_id"));
                     group.setName(resultSet.getString("gr_name"));
                     group.setStudentList(list);
-                } else {                                                                        //
+                } else {
                     group.getStudentList().add(new Student(resultSet.getInt("st_id"),
                                                 resultSet.getString("st_name"),
                                                 resultSet.getString("st_surname"),
@@ -213,9 +211,6 @@ public class Connect {
     public void deleteGroup(int groupId) {
         PreparedStatement statement;
         try {
-            /*statement = conn.prepareStatement("DELETE groups, students " +
-                                                    "ON students.st_group = groups.gr_id " +
-                                                    "WHERE groups.gr_id = (?)");*/
             statement = conn.prepareStatement("DELETE FROM groups " +
                                                     "WHERE groups.gr_id = (?);");
             statement.setString(1, String.valueOf(groupId));

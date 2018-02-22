@@ -1,0 +1,41 @@
+#feedback-form {
+    width: 200px;
+    margin: 0 auto;
+    padding: 20px 50px 40px;
+}
+
+#feedback-form * {
+    box-sizing: border-box;
+}
+
+#feedback-form h2{
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#feedback-form input[type=text], select {
+    margin-bottom: 15px;
+    display: block;
+    height: 32px;
+    padding: 6px 16px;
+    width: 100%;
+    border: none;
+    background-color: #f3f3f3;
+}
+
+#feedback-form button[type=submit] {
+    display: block;
+    margin: 20px auto 0;
+    width: 150px;
+    height: 40px;
+    border-radius: 25px;
+    border: none;
+    color: #eee;
+    font-weight: 700;
+    background-color: #37453c;
+}
+
+h3 {
+    width: 190px;
+    padding-left: 10px;
+}
