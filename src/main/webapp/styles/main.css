@@ -1,11 +1,8 @@
 @font-face{
 
     font-family: 'VerlagBlack';
-
     src: url('../fonts/VerlagBlack.otf');
-
     font-weight: normal;
-
     font-style: normal;
 }
 
@@ -27,8 +24,12 @@ body {
     display: flex;
     align-items: center;
     flex-direction: column;
-    justify-content: center;
     height: 100%;
+}
+
+.container p {
+    margin: 50px;
+    position: relative;
 }
 
 ul {
@@ -55,7 +56,7 @@ h2:after {
     height: 3px;
     position: absolute;
     top: 40%;
-    width: 20px;
+    width: 30px;
 }
 h2:before {
     right: 95%;
@@ -66,8 +67,21 @@ h2:after {
 
 li {
     font-size: 15px;
+    margin-left: 30px;
+    margin-top: 20px;
 }
 
 li a {
     margin-left: 10px;
+}
+
+.container > ul > li {
+    border-left: #37453c 3px solid;
+}
+
+.fa-circle:before {
+    font-size: 10px;
+    position: absolute;
+    bottom: 5px;
+    display: contents;
 }

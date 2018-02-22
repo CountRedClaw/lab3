@@ -29,7 +29,7 @@ public class ServletExample extends HttpServlet {
             request.setAttribute("groups", groups);
         }
 
-        request.getRequestDispatcher("createUser.jsp").forward(request, response);
+        request.getRequestDispatcher("editGroup.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -54,7 +54,7 @@ public class ServletExample extends HttpServlet {
             request.setAttribute("groups", groups);
         }
 
-        request.getRequestDispatcher("createUser.jsp").forward(request, response);
+        request.getRequestDispatcher("editGroup.jsp").forward(request, response);
         *//*request.getRequestDispatcher("/test.jsp").forward(request, response);*/
     }
 }

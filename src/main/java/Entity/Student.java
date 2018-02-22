@@ -9,6 +9,9 @@ public class Student implements Serializable {
     private String surname;
     private long group;
 
+    public Student() {
+    }
+
     public Student(long id, String name, String surname, long group) {
         this.id = id;
         this.name = name;

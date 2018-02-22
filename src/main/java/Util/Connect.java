@@ -6,12 +6,8 @@ import Entity.Student;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,25 +27,35 @@ public class Connect {
             ic = new InitialContext();
             ds = (DataSource) ic.lookup("java:/MySqlDS1");
             conn = ds.getConnection();
-        } catch (SQLException ex) {
-            Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NamingException ex) {
+        } catch (SQLException | NamingException ex) {
             Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return conn;
     }
 
-    public List<Group> getAllGroups() {
+    public List<Group> getAllGroups(String groupName) {
         List<Group> groups = new ArrayList<>();
-        Statement statement = null;
+        PreparedStatement statement;
         try {
-            statement = conn.createStatement();
             ResultSet resultSet;
-            resultSet = statement.executeQuery("select s.st_id, s.st_name, s.st_surname, s.st_group, g.gr_id, g.gr_name " +
-                                                    "from groups g " +
-                                                    "left join students s on (s.st_group = g.gr_id)"
-            );
+
+            if (groupName == null || groupName.equals("")) {
+                statement = conn.prepareStatement("SELECT s.st_id, s.st_name, s.st_surname, s.st_group, g.gr_id, g.gr_name " +
+                        "FROM groups g " +
+                        "LEFT JOIN students s ON (s.st_group = g.gr_id) " +
+                        "ORDER BY g.gr_id"
+                );
+                resultSet = statement.executeQuery();
+            } else {
+                statement = conn.prepareStatement("SELECT s.st_id, s.st_name, s.st_surname, s.st_group, g.gr_id, g.gr_name " +
+                        "FROM groups g " +
+                        "LEFT JOIN students s ON (s.st_group = g.gr_id) " +
+                        "WHERE g.gr_name = (?) " +
+                        "ORDER BY g.gr_id"
+                );
+                statement.setString(1, groupName);
+                resultSet = statement.executeQuery();
+            }
             while (resultSet.next()) {                                                          // Берём записи из селекта по очереди
                 if (resultSet.getInt("st_id") == 0) {                               // Если Группа пустая, то добавляем её как есть
                     Group group = new Group(resultSet.getInt("gr_id"),
@@ -77,30 +83,145 @@ public class Connect {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println(groups.get(0).getId() + " " + groups.get(0).getName());
         return groups;
     }
 
-    /*public void check() {
+    public Group getGroup(int groupId) {
+        Group group = new Group();
+        PreparedStatement statement;
         try {
+            statement = conn.prepareStatement("SELECT s.st_id, s.st_name, s.st_surname, s.st_group, g.gr_id, g.gr_name " +
+                                                    "FROM groups g " +
+                                                    "LEFT JOIN students s ON (s.st_group = g.gr_id) " +
+                                                    "WHERE g.gr_id = (?)");
+            statement.setString(1, String.valueOf(groupId));
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {                                                          // Берём записи из селекта по очереди
+                if (resultSet.isFirst()) {                               //
+                    ArrayList<Student> list = new ArrayList<>();
+                    list.add(new Student(resultSet.getInt("st_id"),
+                            resultSet.getString("st_name"),
+                            resultSet.getString("st_surname"),
+                            resultSet.getInt("st_group")));
 
-            Context context = new InitialContext();
-            DataSource ds = (DataSource) context.lookup("java:/MySqlDS1");
-            //if (ds != null) {
-            java.sql.Connection connection = ds.getConnection();
-            //}`
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("select * from students");
-
-            while (rs.next()) {
-                System.out.println(rs.getString("st_surname"));
+                    group.setId(resultSet.getInt("gr_id"));
+                    group.setName(resultSet.getString("gr_name"));
+                    group.setStudentList(list);
+                } else {                                                                        //
+                    group.getStudentList().add(new Student(resultSet.getInt("st_id"),
+                                                resultSet.getString("st_name"),
+                                                resultSet.getString("st_surname"),
+                                                resultSet.getInt("st_group")));
+                }
             }
-
-            //statement.executeUpdate("declare c int; begin select count(*) into c from ALL_TABLES where table_name='USERGROUP'; if c = 0 then execute immediate 'CREATE TABLE usergroup ( id NUMBER(10) NOT NULL, name VARCHAR2(100) NOT NULL, CONSTRAINT usergroup_pk PRIMARY KEY (id))'; end if; end;");
-            //statement.executeUpdate("declare c int; begin select count(*) into c from ALL_TABLES where table_name='USERS'; if c = 0 then execute immediate 'CREATE TABLE users ( id NUMBER(10) NOT NULL, first_name VARCHAR2(100), last_name VARCHAR2(100), usergroup_id NUMBER(10), CONSTRAINT user_pk PRIMARY KEY (id), CONSTRAINT fk_usergroup FOREIGN KEY (usergroup_id) REFERENCES usergroup(id))'; end if; end;");
-        }
-        catch (SQLException | NamingException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-    }*/
+        return group;
+    }
+
+    public Student getStudent(int studentId) {
+        Student student = new Student();
+        Statement statement;
+        try {
+            statement = conn.createStatement();
+            ResultSet resultSet;
+            resultSet = statement.executeQuery("select * " +
+                                                    "from students " +
+                                                    "where st_id = " + studentId);
+
+            if (resultSet.next()) {
+                student.setId(resultSet.getInt("st_id"));
+                student.setName(resultSet.getString("st_name"));
+                student.setSurname(resultSet.getString("st_surname"));
+                student.setGroup(resultSet.getInt("st_group"));
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return student;
+    }
+
+    public void createStudent(Student student) {
+        PreparedStatement statement = null;
+        try {
+            statement = conn.prepareStatement("INSERT INTO students(st_name, st_surname, st_group) " +
+                                                    "VALUES ((?), (?), (?))");
+            statement.setString(1, student.getName());
+            statement.setString(2, student.getSurname());
+            statement.setString(3, String.valueOf(student.getGroup()));
+            statement.executeUpdate();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void updateStudent(Student student) {
+        PreparedStatement statement;
+        try {
+            statement = conn.prepareStatement("UPDATE students " +
+                                                    "SET st_name = (?), st_surname = (?), st_group = (?) " +
+                                                    "WHERE st_id = (?)");
+            statement.setString(1, student.getName());
+            statement.setString(2, student.getSurname());
+            statement.setString(3, String.valueOf(student.getGroup()));
+            statement.setString(4, String.valueOf(student.getId()));
+            statement.executeUpdate();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteStudent(int studentId) {
+        PreparedStatement statement;
+        try {
+            statement = conn.prepareStatement("DELETE FROM students " +
+                                                    "WHERE st_id = (?)");
+            statement.setString(1, String.valueOf(studentId));
+            statement.executeUpdate();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void createGroup(Group group) {
+        PreparedStatement statement;
+        try {
+            statement = conn.prepareStatement("INSERT INTO groups(gr_name) " +
+                                                    "VALUES ((?))");
+            statement.setString(1, group.getName());
+            statement.executeUpdate();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void updateGroup(Group group) {
+        PreparedStatement statement;
+        try {
+            statement = conn.prepareStatement("UPDATE groups " +
+                                                    "SET gr_name = (?) " +
+                                                    "WHERE gr_id = (?)");
+            statement.setString(1, group.getName());
+            statement.setString(2, String.valueOf(group.getId()));
+            statement.executeUpdate();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteGroup(int groupId) {
+        PreparedStatement statement;
+        try {
+            /*statement = conn.prepareStatement("DELETE groups, students " +
+                                                    "ON students.st_group = groups.gr_id " +
+                                                    "WHERE groups.gr_id = (?)");*/
+            statement = conn.prepareStatement("DELETE FROM groups " +
+                                                    "WHERE groups.gr_id = (?);");
+            statement.setString(1, String.valueOf(groupId));
+            statement.executeUpdate();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 }
